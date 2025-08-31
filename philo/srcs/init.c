@@ -6,7 +6,7 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:02:58 by helin             #+#    #+#             */
-/*   Updated: 2025/08/26 18:43:44 by helin            ###   ########.fr       */
+/*   Updated: 2025/08/31 16:34:14 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,14 @@ int	parse_args(int argc, char **argv, t_rules *rules)
 {
 	int	i;
 
-	//？
 	if (argc != 5 && argc != 6)
 		return (printf("Usage: ./philo num_philos time_to_die "
 				"time_to_eat time_to_sleep [must_eat]\n"), 1);
 	i = 1;
 	while (i < argc)
 	{
-		if (!check_digit(argv[i++]))
-			return (printf("Error: Invalid arguments"), 1);
+		if (!is_valid_arg(argv[i++]))
+			return (printf("Error: Invalid arguments\n"), 1);
 	}
 	rules->num_philos = ft_atoi(argv[1]);
 	rules->time_to_die = ft_atoi(argv[2]);
@@ -34,8 +33,8 @@ int	parse_args(int argc, char **argv, t_rules *rules)
 		rules->meals_to_eat = ft_atoi(argv[5]);
 	else
 		rules->meals_to_eat = -1;
-	if (!rules->num_philos || !rules->time_to_die \
-		|| !rules->time_to_eat || !rules->time_to_sleep || !rules->meals_to_eat)
+	if (!rules->num_philos || !rules->time_to_die || !rules->time_to_eat
+		|| !rules->time_to_sleep || !rules->meals_to_eat)
 		return (printf("Error: Invalid arguments"), 1);
 	rules->stopped = 0;
 	return (0);
@@ -50,10 +49,8 @@ int	init_all(t_rules *rules, t_philo **philos)
 	if (!rules->forks || !*philos)
 		return (perror("malloc"), 1);
 	rules->start_time = timestamp_ms();
-
 	pthread_mutex_init(&rules->stop_lock, NULL);
 	pthread_mutex_init(&rules->print_lock, NULL);
-
 	i = 0;
 	while (i < rules->num_philos)
 	{

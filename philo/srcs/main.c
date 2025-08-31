@@ -6,7 +6,7 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 15:00:10 by helin             #+#    #+#             */
-/*   Updated: 2025/08/26 18:28:05 by helin            ###   ########.fr       */
+/*   Updated: 2025/08/31 15:46:55 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 int	main(int argc, char **argv)
 {
-	t_rules	rules;
-	t_philo	*philos;
+	t_rules		rules;
+	t_philo		*philos;
 	pthread_t	monitor;
-	int		i;
+	int			i;
 
 	if (parse_args(argc, argv, &rules))
 		return (1);

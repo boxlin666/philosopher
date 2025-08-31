@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:45:15 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 17:18:15 by helin            ###   ########.fr       */
+/*   Updated: 2025/08/31 20:01:56 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 #include <limits.h>
 
 int	ft_atoi(const char *str)
@@ -30,6 +30,12 @@ int	ft_atoi(const char *str)
 	return ((int)(res * sign));
 }
 
+void	error_exit(const char *message)
+{
+	printf("Error: %s\n", message);
+	exit(1);
+}
+
 long	timestamp_ms(void)
 {
 	struct timeval	tv;
@@ -38,22 +44,17 @@ long	timestamp_ms(void)
 	return (tv.tv_sec * 1000L + tv.tv_usec / 1000L);
 }
 
-void	smart_sleep(long ms, t_rules *rules)
-{
-	long	start;
-
-	start = timestamp_ms();
-	while (!is_simulation_stopped(rules) && (timestamp_ms() - start) < ms)
-		usleep(500);
-}
-
 void	print_action(t_philo *ph, char *msg)
 {
-	pthread_mutex_lock(&ph->rules->print_lock);
-	if (!is_simulation_stopped(ph->rules))
-		printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id,
-			msg);
-	pthread_mutex_unlock(&ph->rules->print_lock);
+	sem_wait(ph->rules->sem_print);
+	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
+	sem_post(ph->rules->sem_print);
+}
+
+void	print_death(t_philo *ph, char *msg)
+{
+	sem_wait(ph->rules->sem_print);
+	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
 }
 
 int	is_valid_arg(char *str)

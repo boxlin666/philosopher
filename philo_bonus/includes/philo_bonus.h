@@ -1,38 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 15:02:49 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 17:17:59 by helin            ###   ########.fr       */
+/*   Created: 2025/08/31 17:49:04 by helin             #+#    #+#             */
+/*   Updated: 2025/08/31 18:35:52 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
+# include <fcntl.h>
 # include <pthread.h>
+# include <semaphore.h>
+# include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
+# include <sys/wait.h>
 # include <unistd.h>
 
-struct s_rules;
+# define SEM_FORKS "/philo_forks"
+# define SEM_PRINT "/philo_print"
+# define SEM_STOP "/philo_stop"
+
+struct  s_rules;
 
 typedef struct s_philo
 {
 	int				id;
-	pthread_t		thread;
-
-	int				meals_eaten;
+	pid_t			pid;
 	long			last_meal_time;
+	int				meals_eaten;
 	pthread_mutex_t	state_lock;
-
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-
 	struct s_rules	*rules;
 }					t_philo;
 
@@ -43,30 +46,26 @@ typedef struct s_rules
 	long			time_to_eat;
 	long			time_to_sleep;
 	int				meals_to_eat;
-
 	long			start_time;
-	int				stopped;
 
-	pthread_mutex_t	stop_lock;
-	pthread_mutex_t	print_lock;
-	pthread_mutex_t	*forks;
+	t_philo			*philos;
+	sem_t			*sem_forks;
+	sem_t			*sem_print;
+	sem_t			*sem_stop;
+
 }					t_rules;
 
-int					parse_args(int argc, char **argv, t_rules *rules);
+void				cleanup(t_rules *rules);
+void				error_exit(const char *message);
 
-int					init_all(t_rules *rules, t_philo **philos);
-void				free_all(t_rules *rules, t_philo *philos);
+int					init_rules(int argc, char **argv, t_rules *rules);
+int					init_semaphores(t_rules *rules);
 
-int					is_simulation_stopped(t_rules *rules);
-void				*philo_routine(void *arg);
-
-int					check_philo_status(t_philo *philo, int *philos_full_count);
-void				*monitor_routine(void *arg);
-
-long				timestamp_ms(void);
-void				smart_sleep(long ms, t_rules *rules);
-void				print_action(t_philo *ph, char *msg);
 int					ft_atoi(const char *str);
+void				philo_routine(t_philo *philo);
+long				timestamp_ms(void);
+void				print_action(t_philo *ph, char *msg);
+void				print_death(t_philo *ph, char *msg);
 int					is_valid_arg(char *str);
 
 #endif

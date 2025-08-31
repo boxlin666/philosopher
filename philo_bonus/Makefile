@@ -1,83 +1,32 @@
-#
-# Makefile for the 42 project "philosophers" (Bonus part)
-#
-
-# --- Variables ---
-
-# The name of your final executable
 NAME = philo_bonus
 
-# The compiler to use
 CC = cc
+CFLAGS = -Wall -Wextra -Werror -pthread -g #-fsanitize=thread 
 
-# The command to remove files
-RM = rm -f
+SRC_DIR = srcs/
+INC_DIR = includes/
+OBJ_DIR = objs/
 
-# Compiler flags:
-# -Wall -Wextra -Werror: The standard 42 flags for maximum warnings.
-# -pthread: Essential for compiling semaphore and thread functions.
-# -g: Adds debugging symbols (for use with gdb/lldb).
-# -fsanitize=thread: A powerful tool to detect data races at runtime.
-#                    Highly recommended for this project.
-CFLAGS = -Wall -Wextra -Werror -pthread -g -Iinclude
+SRC_FILES = main_bonus.c init_bonus.c routine_bonus.c utils_bonus.c
+SRCS = $(addprefix $(SRC_DIR), $(SRC_FILES))
 
-# --- Files ---
+OBJS = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRCS))
 
-# List of your source (.c) files.
-# !!! IMPORTANT: You MUST update this list with your actual file names.
-SRCS =  src/main_bonus.c \
-        src/init_bonus.c \
-        src/routine_bonus.c \
-        src/utils_bonus.c
-
-# List of your header (.h) files.
-HDRS = philo_bonus.h
-
-# Object (.o) files are automatically generated from the source files list.
-# The following line replaces every ".c" extension with ".o".
-OBJS = $(SRCS:.c=.o)
-
-
-# --- Rules ---
-
-# The default rule that is executed when you just type "make".
-# It depends on the main target, $(NAME).
 all: $(NAME)
 
-# Rule to link all object files into the final executable.
-# It depends on all object files. If any .o file is newer than $(NAME),
-# this rule will be executed.
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	@echo "philo_bonus compiled successfully!"
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
-# Generic rule to compile a .c file into a .o file.
-# "%.o" is the target (any file ending in .o)
-# "%.c" is the prerequisite (a file with the same name ending in .c)
-# It also depends on the header file(s). If a header changes, all source
-# files will be recompiled.
-%.o: %.c $(HDRS)
-	$(CC) $(CFLAGS) -c $< -o $@
-	@echo "Compiled $<"
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
-# Rule to clean up object files.
 clean:
-	$(RM) $(OBJS)
-	@echo "Object files removed."
+	rm -rf $(OBJ_DIR)
 
-# Rule to clean up everything (object files + executable).
-# It first calls the "clean" rule.
 fclean: clean
-	$(RM) $(NAME)
-	@echo "Executable removed."
+	rm -f $(NAME)
 
-# Rule to force a full re-compilation.
-# It calls "fclean" first to delete everything, then calls "all" to re-build.
 re: fclean all
 
-# --- Phony Targets ---
-
-# Declares targets that are not actual files. This tells "make" to
-# always run the commands for these targets, and prevents conflicts if a
-# file with the same name (e.g., "clean") exists in the directory.
 .PHONY: all clean fclean re
