@@ -6,7 +6,7 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:45:15 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 20:01:56 by helin            ###   ########.fr       */
+/*   Updated: 2025/09/02 21:32:41 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,13 @@ int	ft_atoi(const char *str)
 	return ((int)(res * sign));
 }
 
-void	error_exit(const char *message)
+void	error_exit(const char *message, t_rules *rules)
 {
 	printf("Error: %s\n", message);
+	if (rules->philos)
+		free(rules->philos);
+	if (rules->sems_initialized)
+		sem_post(rules->sem_stop);
 	exit(1);
 }
 
@@ -42,19 +46,6 @@ long	timestamp_ms(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000L + tv.tv_usec / 1000L);
-}
-
-void	print_action(t_philo *ph, char *msg)
-{
-	sem_wait(ph->rules->sem_print);
-	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
-	sem_post(ph->rules->sem_print);
-}
-
-void	print_death(t_philo *ph, char *msg)
-{
-	sem_wait(ph->rules->sem_print);
-	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
 }
 
 int	is_valid_arg(char *str)

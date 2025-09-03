@@ -6,20 +6,21 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 16:57:53 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 18:35:36 by helin            ###   ########.fr       */
+/*   Updated: 2025/09/02 21:41:24 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
 void	*monitor_routine(void *arg);
+
 void	philo_routine(t_philo *philo)
 {
 	pthread_t	monitor;
 
 	philo->last_meal_time = philo->rules->start_time;
 	if (pthread_create(&monitor, NULL, &monitor_routine, philo) != 0)
-		error_exit("Failed to create monitor thread");
+		error_exit("Fail to create monitor thread", philo->rules);
 	pthread_detach(monitor);
 	while (1)
 	{
@@ -68,4 +69,17 @@ void	*monitor_routine(void *arg)
 		usleep(1000);
 	}
 	return (NULL);
+}
+
+void	print_action(t_philo *ph, char *msg)
+{
+	sem_wait(ph->rules->sem_print);
+	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
+	sem_post(ph->rules->sem_print);
+}
+
+void	print_death(t_philo *ph, char *msg)
+{
+	sem_wait(ph->rules->sem_print);
+	printf("%ld %d %s\n", timestamp_ms() - ph->rules->start_time, ph->id, msg);
 }

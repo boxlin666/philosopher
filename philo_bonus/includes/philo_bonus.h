@@ -6,7 +6,7 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:49:04 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 18:35:52 by helin            ###   ########.fr       */
+/*   Updated: 2025/09/02 21:48:18 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # define SEM_PRINT "/philo_print"
 # define SEM_STOP "/philo_stop"
 
-struct  s_rules;
+struct	s_rules;
 
 typedef struct s_philo
 {
@@ -52,11 +52,12 @@ typedef struct s_rules
 	sem_t			*sem_forks;
 	sem_t			*sem_print;
 	sem_t			*sem_stop;
+	int				sems_initialized;
 
 }					t_rules;
 
 void				cleanup(t_rules *rules);
-void				error_exit(const char *message);
+void				error_exit(const char *message, t_rules *rules);
 
 int					init_rules(int argc, char **argv, t_rules *rules);
 int					init_semaphores(t_rules *rules);

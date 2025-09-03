@@ -6,7 +6,7 @@
 /*   By: helin <helin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 15:02:49 by helin             #+#    #+#             */
-/*   Updated: 2025/08/31 17:17:59 by helin            ###   ########.fr       */
+/*   Updated: 2025/09/02 17:06:33 by helin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-struct s_rules;
+struct	s_rules;
 
 typedef struct s_philo
 {
@@ -52,8 +52,10 @@ typedef struct s_rules
 	pthread_mutex_t	*forks;
 }					t_rules;
 
-int					parse_args(int argc, char **argv, t_rules *rules);
-
+int					parse_args(int argc, char **argv, t_rules *rules,
+						t_philo *philos);
+void				error_exit(const char *msg, t_rules *rules,
+						t_philo *philos);
 int					init_all(t_rules *rules, t_philo **philos);
 void				free_all(t_rules *rules, t_philo *philos);
 
